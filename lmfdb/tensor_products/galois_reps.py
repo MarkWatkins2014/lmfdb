@@ -156,7 +156,7 @@ class GaloisRepresentation( Lfunction):
             whose input is a prime and
             whose output is a polynomial
             such that evaluated at p^-s,
-            we get the inverse of the local factor
+            we get the reciprocal of the local factor
             of the L-function
             """
             R = PolynomialRing(QQ, "T")
@@ -230,7 +230,6 @@ class GaloisRepresentation( Lfunction):
     def init_artin_rep(self, rho):
         """
         Initiate with an Artin representation
- 
         """
         self.original_object = [rho]
         self.object_type = "Artin representation"
@@ -346,7 +345,7 @@ class GaloisRepresentation( Lfunction):
                                           "Here the behaviour at %s is too wild as" +
                                           "the rep is not semistable for both factors."%p)
 
-        # check for the possibily of getting poles
+        # check for the possibility of getting poles
         if V.weight == W.weight and V.conductor == W.conductor :
             Vans = V.algebraic_coefficients(50)
             Wans = W.algebraic_coefficients(50)
@@ -598,7 +597,7 @@ class GaloisRepresentation( Lfunction):
 
 
 #########################
-# This is copied from Mark Watkin's code:
+# From Mark Watkins, transcribed by Chris Wuthrich
 
 def tensor_get_an(L1, L2, d1, d2, BadPrimeInfo):
     """
@@ -761,7 +760,7 @@ def get_euler_factor(L,p):
     return list_to_euler_factor(E,f)
 
 
-def list_to_euler_factor(L,d):
+def list_to_euler_factor(L,prec):
     """
     takes a list [a_p, a_p^2,...
     and returns the euler factor
@@ -773,10 +772,10 @@ def list_to_euler_factor(L,d):
     R = PowerSeriesRing(K, "T")
     T = R.gens()[0]
     f =  1/ R([1]+L)
-    f = f.add_bigoh(d+1)
+    f = f.add_bigoh(prec+1)
     return f
 
-def tensor_local_factors(f1, f2, d):
+def tensor_local_factors(f1, f2, prec):
     """
     takes two euler factors f1, f2 and a prec and
     returns the euler factor for the tensor
@@ -791,16 +790,16 @@ def tensor_local_factors(f1, f2, d):
         K = QQ
     R = PowerSeriesRing(K, "T")
     if not f1.parent().is_exact(): # ideally f1,f2 should already be in PSR
-        if f1.prec() < d:
+        if f1.prec() < prec:
             raise ValueError
     if not f2.parent().is_exact(): # but the user might give them as polys...
-        if f2.prec() < d:
+        if f2.prec() < prec:
             raise ValueError
     f1 = R(f1)
     f2 = R(f2)
     if f1==1 or f2==1:
         f = R(1)
-        f = f.add_bigoh(d+1)
+        f = f.add_bigoh(prec+1)
         return f
     l1 = f1.log().derivative()
     p1 = l1.prec()
@@ -816,7 +815,7 @@ def tensor_local_factors(f1, f2, d):
     for i in range(len(c1)):
         C[i] = c1[i] * c2[i]
     E = - R(C).integral()
-    E = E.add_bigoh(d+1)
+    E = E.add_bigoh(prec+1)
     E = E.exp() # coerce to R
     return E
 
